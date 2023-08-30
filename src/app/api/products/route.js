@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const result = await POOL.query("SELECT * FROM product");
-    return NextResponse.json({ result });
+    return NextResponse.json(result);
   } catch (error) {
     console.log(error);
     return NextResponse.json({ message: error.message }, { status: 500 });

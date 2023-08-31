@@ -98,7 +98,7 @@ function ProductForm({ id = null }) {
   };
   return (
     <form
-      className="bg-white rounded-md shadow-md px-8 pt-6 pb-8 mb-4 flex flex-col"
+      className="bg-white rounded-md shadow-md px-8 pt-6 pb-8 mb-4 w-2/6 flex flex-col"
       onSubmit={handleSubmit}
       ref={form}
     >
@@ -147,12 +147,12 @@ function ProductForm({ id = null }) {
       </label>
       {file && (
         <img
-          className="w-40 my-4 mx-auto object-contain"
+          className="w-1/3 my-4 mx-auto object-contain"
           src={URL.createObjectURL(file)}
           alt=""
         />
       )}
-      {product.image && (
+      {product.image && !file && (
         <img
           className="w-40 my-4 mx-auto object-contain"
           src={product.image}

@@ -15,7 +15,9 @@ export default function RootLayout({ children }) {
         <header className="bg-gray-800 text-white h-5">
           <h1>NavBar</h1>
         </header>
-        <main className="h-[calc(100vh-5rem)]">{children}</main>
+        <main className="h-[calc(100vh-5rem)] container mx-auto">
+          {children}
+        </main>
       </body>
     </html>
   );

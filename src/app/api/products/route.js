@@ -12,7 +12,9 @@ export async function GET() {
 }
 export async function POST(request) {
   try {
-    const { name, description, price } = await request.json();
+    const data = await request.formData();
+    const { name, description, price, image } = Object.fromEntries(data);
+    console.log(name, description, price, image);
     const result = await POOL.query("INSERT INTO product SET ?", {
       name,
       description,

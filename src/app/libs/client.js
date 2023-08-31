@@ -2,14 +2,26 @@ import axios from "axios";
 
 axios.defaults.baseURL = "http://localhost:3000";
 
-export async function createProduct(...data) {
-  return await axios.post("/api/products", data);
-}
-export async function updateProduct(id, data) {
-  return await axios.put(`/api/products/${id}`, data);
+export async function getAllProducts() {
+  return await axios.get(`/api/products`);
 }
 
-export async function getProduct(...id) {
+export async function createProduct(data) {
+  return await axios.post("/api/products", data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+export async function updateProduct(id, data) {
+  return await axios.put(`/api/products/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+
+export async function getProduct(id) {
   return await axios.get(`/api/products/${id}`);
 }
 

@@ -14,6 +14,7 @@ function ProductForm({ id = null }) {
     name: "",
     description: "",
     price: "0",
+    image: "",
   });
   const [message, setMessage] = useState(null);
   const [file, setFile] = useState(null);
@@ -27,6 +28,7 @@ function ProductForm({ id = null }) {
           name: data.name,
           description: data.description,
           price: data.price,
+          image: data.image,
         })
       );
     }
@@ -50,10 +52,11 @@ function ProductForm({ id = null }) {
 
   const handleSubmit = async (e) => {
     const formData = new FormData(form.current);
-    console.log(Object.fromEntries(formData));
+    const file = formData.get("image");
+    if (file.size === 0) setProduct;
     try {
       e.preventDefault();
-      id ? await updateProduct(id, formData) : await createProduct(formData);
+      id ? await updateProduct(id, product) : await createProduct(formData);
 
       setProduct({ name: "", description: "", price: "0" });
       form.current.reset();
@@ -68,7 +71,7 @@ function ProductForm({ id = null }) {
       }, 2000);
     } catch (error) {
       console.log(error);
-      setMessage("Error adding product");
+      setMessage(error.response.data.message);
       output.current.className =
         "text-red-500 text-sm font-bold max-w-sm text-center";
     }
@@ -146,6 +149,13 @@ function ProductForm({ id = null }) {
         <img
           className="w-40 my-4 mx-auto object-contain"
           src={URL.createObjectURL(file)}
+          alt=""
+        />
+      )}
+      {product.image && (
+        <img
+          className="w-40 my-4 mx-auto object-contain"
+          src={product.image}
           alt=""
         />
       )}

@@ -1,5 +1,8 @@
 import { POOL } from "@/app/libs/mysql";
 import { NextResponse } from "next/server";
+import cloudinary from "@/app/libs/cludinary";
+import { processImage } from "@/app/libs/processImage";
+import { unlink } from "fs/promises";
 
 export async function GET(request, { params }) {
   try {
@@ -21,18 +24,28 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   try {
-    const data = await request.json();
+    const data = await request.formData();
     const { id } = params;
+    const { name, description, price, image: file } = Object.fromEntries(data);
+    let image = "";
+    if (file) {
+      const filePath = await processImage(file);
+      const res = await cloudinary.uploader.upload(filePath);
+      image = res.secure_url;
+      if (res) {
+        await unlink(filePath);
+      }
+    }
     const result = await POOL.query("UPDATE product SET ? WHERE id = ?", [
-      data,
+      { name, description, price, image },
       id,
     ]);
-
     if (result.affectedRows === 0)
       return NextResponse.json(
         { message: "Producto no encontrado" },
         { status: 404 }
       );
+
     const updatedProduct = await POOL.query(
       "SELECT * FROM product WHERE id = ?",
       [id]

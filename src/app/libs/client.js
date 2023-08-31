@@ -16,7 +16,7 @@ export async function createProduct(data) {
 export async function updateProduct(id, data) {
   return await axios.put(`/api/products/${id}`, data, {
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "multipart/form-data",
     },
   });
 }

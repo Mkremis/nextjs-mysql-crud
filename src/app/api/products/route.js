@@ -1,14 +1,8 @@
 import { POOL } from "@/app/libs/mysql";
 import { NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
-import path from "path";
-import { v2 as cloudinary } from "cloudinary";
-
-cloudinary.config({
-  cloud_name: "dmjmadjdd",
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { unlink } from "fs/promises";
+import cloudinary from "@/app/libs/cludinary";
+import { processImage } from "@/app/libs/processImage";
 
 export async function GET() {
   try {
@@ -23,25 +17,31 @@ export async function POST(request) {
   try {
     const data = await request.formData();
     const { name, description, price, image: file } = Object.fromEntries(data);
-    console.log(file);
-    if (!name || !description || !price || !file.size)
+
+    if (!name) {
       return NextResponse.json(
-        { message: "All fields are required" },
+        { message: "Name is required" },
         { status: 400 }
       );
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const pathFile = path.join(process.cwd(), "public", file.name);
-    await writeFile(pathFile, buffer);
-    const res = await cloudinary.uploader.upload(pathFile);
+    }
+    if (!file) {
+      return NextResponse.json(
+        { message: "File is required" },
+        { status: 400 }
+      );
+    }
+    const filePath = await processImage(file);
+    const res = await cloudinary.uploader.upload(filePath);
     const image = res.secure_url;
+    if (res) {
+      await unlink(filePath);
+    }
     const result = await POOL.query("INSERT INTO product SET ?", {
       name,
       description,
       price,
       image,
     });
-    console.log(result);
     return NextResponse.json({
       name,
       description,

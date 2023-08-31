@@ -51,14 +51,17 @@ function ProductForm({ id = null }) {
     setProduct({ ...product, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
-    const formData = new FormData(form.current);
-    const file = formData.get("image");
-    if (file.size === 0) setProduct;
     try {
       e.preventDefault();
-      id ? await updateProduct(id, product) : await createProduct(formData);
+      const formData = new FormData();
+      formData.append("name", product.name);
+      formData.append("description", product.description);
+      formData.append("price", product.price);
+      if (file) {
+        formData.append("image", file);
+      }
 
-      setProduct({ name: "", description: "", price: "0" });
+      id ? await updateProduct(id, formData) : await createProduct(formData);
       form.current.reset();
       id
         ? setMessage("Product updated successfully")
